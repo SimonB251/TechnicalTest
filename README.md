@@ -6,6 +6,7 @@ To test this application:
 Create the database
 1. Copy script from the DB Script file
 2. Run in a new query window in SQL
+3. Import the Test_Accounts.csv flatfile into the appropriate table. 
 
 Start the API
 1. Open the TechnicalTestAPI Folder
