@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model HomeModel
+
+<div class="">
+    <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Upload">
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <fieldset class="p-2 border">
+                    <legend>Upload Meter Readings</legend>
+                    <div class="row">
+                        <div class="col-md-12">
+                            @* name="" of input field allows it to bind to the model...*@
+                            <input style="display:none;" name="CsvUpload" value="upload" tabindex="-1" type="file" id="file-input" />
+                            <label tabindex="0" for="file-input" class="upload-graphic">
+                                <span class="fas fa-upload">
+                                </span>
+                                <strong>Click here to select meter readings file</strong>
+                                <br />
+                                <blockquote class="accepted-types">*.csv accepted</blockquote>
+                            </label>
+                            <div>
+                                <input type="submit" value="Upload" class="btn btn-outline-primary btn-group-lg full-width-button">
+                                @*<button name="command" value="SubmitCsv" class="btn btn-outline-primary btn-group-lg full-width-button">Upload selected CSV</button>*@
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong class="">Successful Insertions</strong>
+                                    @Html.DisplayTextFor(x => x.InsertResult.SuccessfulInsertions)
+                                </div>
+
+                                <div class="col-md-6">
+                                    <strong class="">Failed Insertions</strong>
+                                    @Html.DisplayTextFor(x => x.InsertResult.FailedInsertions)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </form>
+</div>

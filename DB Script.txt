@@ -1,0 +1,75 @@
+USE [TechnicalTest]
+GO
+/****** Object:  Table [dbo].[Customers]    Script Date: 29/01/2020 10:44:46 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Customers](
+	[AccountId] [int] NOT NULL,
+	[FirstName] [nvarchar](50) NOT NULL,
+	[LastName] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED 
+(
+	[AccountId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MeterReadings]    Script Date: 29/01/2020 10:44:46 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MeterReadings](
+	[AccountId] [int] NOT NULL,
+	[MeterReadingDateTime] [datetime] NOT NULL,
+	[MeterReadValue] [nvarchar](5) NOT NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[MeterReadings]  WITH CHECK ADD  CONSTRAINT [FK_MeterReadings_Customers] FOREIGN KEY([AccountId])
+REFERENCES [dbo].[Customers] ([AccountId])
+GO
+ALTER TABLE [dbo].[MeterReadings] CHECK CONSTRAINT [FK_MeterReadings_Customers]
+GO
+/****** Object:  StoredProcedure [dbo].[InsertMeterReading]    Script Date: 29/01/2020 10:44:46 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[InsertMeterReading](
+@AccountID int, 
+@MeterReadingDateTime datetime, 
+@MeterReadValue nvarchar(5)
+)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+    
+	IF EXISTS -- If this accountId exists
+		 (SELECT TOP 1 AccountId FROM Customers WHERE AccountId = @AccountID) 
+	   AND NOT EXISTS -- and there was no reading from the same account at the same time.
+		 (SELECT TOP 1 AccountId, MeterReadingDateTime FROM MeterReadings WHERE @AccountID = AccountID AND @MeterReadingDateTime = MeterReadingDateTime)
+		BEGIN	
+			INSERT INTO [dbo].[MeterReadings]
+					   ([AccountId]
+					   ,[MeterReadingDateTime]
+					   ,[MeterReadValue])
+				 VALUES
+					   (@AccountID,
+						@MeterReadingDateTime,
+						@MeterReadValue)
+			SELECT CAST(1 AS BIT) as 'Result' -- Successful insertion
+		END
+	ELSE 
+		BEGIN
+			SELECT CAST(0 AS BIT) as 'Result' -- Failed insertion
+		END
+END
+GO
